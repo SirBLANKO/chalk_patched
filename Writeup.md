@@ -200,8 +200,6 @@ No public deployment or hosted testing has been completed for this writeup. Add 
 
 ## Normal functionality checks:
 
-The results below distinguish completed renderer tests from manual application checks that still need to be recorded.
-
 | Test | Actual result / verification status |
 |---|---|
 | Original XSS payload | In isolated Chromium rendering, the handler changed the heading and opened the expected alert. |
