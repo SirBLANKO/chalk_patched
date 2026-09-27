@@ -104,8 +104,6 @@ From the project folder containing `package.json`, install the required packages
 npm.cmd install --save-exact markdown-it@15.0.2 sanitize-html@2.17.7
 ```
 
-Replace the entire contents of `lib/markdown.js` with:
-
 ```javascript
 const MarkdownIt = require("markdown-it");
 const sanitizeHtml = require("sanitize-html");
