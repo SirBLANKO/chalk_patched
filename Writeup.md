@@ -10,7 +10,7 @@
 
 ## Steps to reproduce:
 
-1. Run the original, unpatched application locally, and open [http://127.0.0.1:3000](http://127.0.0.1:3000).
+1. Run the original, unpatched application locally, and open http://localhost:3000.
 3. Sign in using `maya@campus.edu` and password `campus123`.
 4. Click **Post** and submit a normal post containing whatever you like. You will be able to view it on the wall.
 5. Now create another post containing this exact text:
