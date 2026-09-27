@@ -145,7 +145,7 @@ In the isolated Chromium test, HTML produced by the patched renderer displayed t
 
 ![After patch screenshot 1](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20182434.png)
 
-**Ingognito browser showing the XSS was not stored:**
+**Ingognito browser showing the stored XSS no longer executes:**
 ![After patch screenshot 1](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20182537.png)
 
 The patch runs whenever a stored post is rendered. Existing malicious posts therefore go through the corrected renderer too; removing the demonstration post alone would not repair the underlying defect.
