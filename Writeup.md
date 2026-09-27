@@ -43,12 +43,6 @@ In an isolated Chromium test, HTML produced by the original `renderMarkdown()` f
 
 **Cause:** The post body is stored in SQLite and later passed through a Markdown formatter that preserves raw HTML. `PostBody` inserts the resulting string as HTML using `dangerouslySetInnerHTML`. The browser interprets the injected image element and executes its `onerror` attribute when the local image cannot be loaded.
 
-The affected flow is:
-
-`Compose form → createPostAction → posts.body → renderMarkdown → PostBody → browser`
-
-The database insert already uses SQL placeholders. Those protect the SQL query; stored text still needs safe handling when it is rendered as HTML.
-
 ## Code Examples
 
 ### Vulnerable Code (Before Patch)
