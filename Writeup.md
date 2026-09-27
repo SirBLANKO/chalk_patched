@@ -173,7 +173,7 @@ Expected after patch: no executable JavaScript link.
 
 ## Hosted testing
 
-No public deployment or hosted testing has been completed for this writeup. Add the actual hosted URL and results after checking the deployed, patched application. The local URL is reachable only from the computer running the app.
+The render website stopped the XSS payload from executing both in the regular browser and in the incognito browser.
 
 ## Normal functionality checks:
 
