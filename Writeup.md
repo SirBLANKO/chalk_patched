@@ -27,11 +27,17 @@
 
 **Observed behavior before the patch:**
 
+![Before patch screenshot 1](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20150606.png)
+
+![Before patch screenshot 1](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20150709.png)
+
+![Before patch screenshot 2](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20150736.png)
+
+![Before patch screenshot 3](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20150747.png)
+
+![Before patch screenshot 3](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20150808.png)
+
 In an isolated Chromium test, HTML produced by the original `renderMarkdown()` function created an active image element. The image's error handler changed the heading to `CHALK XSS PROOF` and displayed the `Chalk stored XSS` alert. This verifies execution at the rendering boundary. A completed manual walkthrough of the running app has not yet been documented here.
-
-**Screenshot:** TODO: Add your actual before-patch screenshot under `docs/evidence/before-xss.png`, then uncomment this image line.
-
-<!-- ![Before patch screenshot](docs/evidence/before-xss.png) -->
 
 **Cause:** The post body is stored in SQLite and later passed through a Markdown formatter that preserves raw HTML. `PostBody` inserts the resulting string as HTML using `dangerouslySetInnerHTML`. The browser interprets the injected image element and executes its `onerror` attribute when the local image cannot be loaded.
 
