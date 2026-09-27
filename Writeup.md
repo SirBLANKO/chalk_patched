@@ -163,14 +163,6 @@ XSS demonstration
 
 Expected after patch: literal text, no active image, no alert, and no heading change.
 
-**HTML event-handler test:**
-
-```html
-<svg onload="alert('Chalk XSS test')"></svg>
-```
-
-Expected after patch: literal text and no active SVG element.
-
 **JavaScript link test:**
 
 ```markdown
@@ -178,21 +170,6 @@ Expected after patch: literal text and no active SVG element.
 ```
 
 Expected after patch: no executable JavaScript link.
-
-**Normal Markdown test:**
-
-```markdown
-## Markdown check
-
-**Bold text** and *italic text* and `code`
-
-[Wall link](/) and [University link](https://www.udel.edu)
-
-- Calipers
-- Wrench
-```
-
-Expected after patch: formatted heading, bold, italic, inline code, working relative and HTTPS links, and a two-item list.
 
 ## Hosted testing
 
