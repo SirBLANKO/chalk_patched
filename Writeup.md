@@ -152,7 +152,7 @@ The patch runs whenever a stored post is rendered. Existing malicious posts ther
 
 ## Exact test inputs
 
-Enter these in the **Post** field on the compose page. Next.js submits the form to its Server Action. These are post bodies, not URL query parameters.
+The following test requests are documented for reproducibility. These should be entered into the post bodies and submitted by pressing "Post to the wall". Then Next.js submits the form to its Server Action.
 
 **Stored-XSS demonstration:**
 
