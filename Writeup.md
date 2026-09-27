@@ -20,7 +20,7 @@
    <img src="/chalk-xss-missing-image" onerror="document.querySelector('.hero h1').textContent='CHALK XSS PROOF';alert('Chalk stored XSS')">
    ```
 
-6. Click **Post to the wall**. On the vulnerable version, the expected result is an alert saying `Chalk stored XSS` and a main heading changed to `CHALK XSS PROOF`.
+6. Click **Post to the wall**. On the vulnerable version, the expected result is an alert saying `Chalk stored XSS` and the main heading changed to `CHALK XSS PROOF`.
 7. Refresh the wall and open the same URL in a private browser window to check that the stored post triggers for a separate visitor.
 
 **Expected behavior:** The app supports normal Markdown formatting, but text supplied in a post must not execute JavaScript in a visitor's browser.
