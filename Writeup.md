@@ -6,7 +6,7 @@
 
 **Impact:** A member can save a post containing executable HTML. When another visitor views the public wall, the injected JavaScript can run in that visitor's page, including when the visitor is signed in as an officer. The demonstration below only changes the wall heading and displays an alert.
 
-**Live Demo:** TODO: Add the patched hosted URL.
+**Live Demo:** https://chalk-patched-3ug2.onrender.com
 
 ## Steps to reproduce:
 
