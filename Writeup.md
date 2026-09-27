@@ -1,51 +1,49 @@
-# Chalk: stored cross-site scripting in wall posts
+# Chalk: Stored Cross-Site Scripting in Wall Posts
 
-**Location:** The `renderMarkdown()` function in `lib/markdown.js`. Its output is passed from `app/page.js` to `components/PostBody.js`, which displays it using `dangerouslySetInnerHTML`.
+**Location:** The `renderMarkdown()` function in `lib/markdown.js`. The formatted post is passed through `app/page.js` to `components/PostBody.js`, which displays it on the wall.
 
-**Problem:** User-supplied post text is converted into HTML without proper escaping or sanitization. The original `escapeUnused()` function returns the input unchanged, allowing HTML elements and JavaScript event handlers to remain in the rendered post.
+**Problem:** The original Markdown formatter allowed HTML and JavaScript event handlers to remain in posts. Although it included a function called `escapeUnused()`, that function returned the text without making it safe to display.
 
-**Impact:** A member can save a post containing executable HTML. When another visitor views the public wall, the injected JavaScript can run in that visitor's page, including when the visitor is signed in as an officer. The demonstration below only changes the wall heading and displays an alert.
+**Impact:** A member could publish a post that ran JavaScript when someone viewed the wall. This could affect other members, signed-out visitors, or officers. The demonstration used here changed the page heading and displayed an alert.
 
-**Live Demo:** https://chalk-patched-3ug2.onrender.com
+**Live Demo:** [https://chalk-patched-3ug2.onrender.com](https://chalk-patched-3ug2.onrender.com)
 
-## Steps to reproduce:
+## Steps to Reproduce
 
-1. Run the original, unpatched application locally, and open http://localhost:3000.
-3. Sign in using `maya@campus.edu` and password `campus123`.
-4. Click **Post** and submit a normal post containing whatever you like. You will be able to view it on the wall.
-5. Now create another post containing this exact text:
+1. Run the original, unpatched application locally and open [http://localhost:3000](http://localhost:3000).
+2. Sign in with `maya@campus.edu` and the password `campus123`.
+3. Click **Post**, submit a normal post, and confirm that it appears on the wall.
+4. Create another post containing this exact text:
 
    ```html
    XSS demo
    <img src="/chalk-xss-missing-image" onerror="document.querySelector('.hero h1').textContent='CHALK XSS PROOF';alert('Chalk stored XSS')">
    ```
 
-6. Click **Post to the wall**. On the vulnerable version, the expected result is an alert saying `Chalk stored XSS` and the main heading changed to `CHALK XSS PROOF`.
-7. Refresh the wall and open the same URL in a private browser window to check that the stored post triggers for a separate visitor.
+5. Click **Post to the wall**. In the vulnerable version, an alert appears saying “Chalk stored XSS,” and the main heading changes to “CHALK XSS PROOF.”
+6. Refresh the page, then open the wall in an incognito window. The saved post should trigger the same behavior for that separate visitor.
 
-**Expected behavior:** The app supports normal Markdown formatting, but text supplied in a post must not execute JavaScript in a visitor's browser.
+**Expected behavior:** Posts should support normal Markdown formatting without running JavaScript entered by a user.
 
-**Observed behavior before the patch:**
+**Observed behavior before the patch:** The demonstration post changed the wall heading and displayed an alert. It also ran when the wall was opened in an incognito window, showing that the saved post could affect another visitor.
 
 ![Before patch screenshot 1](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20150606.png)
 
-![Before patch screenshot 1](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20150709.png)
+![Before patch screenshot 2](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20150709.png)
 
-![Before patch screenshot 2](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20150736.png)
+![Before patch screenshot 3](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20150736.png)
 
-![Before patch screenshot 3](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20150747.png)
+![Before patch screenshot 4](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20150747.png)
 
-**Ingognito browser showing the stored XSS:**
+**Incognito browser showing the stored XSS:**
 
-![Before patch screenshot 3](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20150808.png)
+![Before patch incognito screenshot](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20150808.png)
 
-In an isolated Chromium test, HTML produced by the original `renderMarkdown()` function created an active image element. The image's error handler changed the heading to `CHALK XSS PROOF` and displayed the `Chalk stored XSS` alert. This verifies execution at the rendering boundary. A completed manual walkthrough of the running app has not yet been documented here.
-
-**Cause:** The post body is stored in SQLite and later passed through a Markdown formatter that preserves raw HTML. `PostBody` inserts the resulting string as HTML using `dangerouslySetInnerHTML`. The browser interprets the injected image element and executes its `onerror` attribute when the local image cannot be loaded.
+**Cause:** The app saved the post in SQLite and later displayed it as HTML. Because the original formatter left the image and its onerror instruction intact, the browser ran the JavaScript when the image failed to load. The problem was in how posts were displayed, rather than in saving the text itself.
 
 ## Code Examples
 
-### Vulnerable Code (Before Patch)
+### Vulnerable Code Before the Patch
 
 **File:** `lib/markdown.js`
 
@@ -76,9 +74,11 @@ function renderMarkdown(src) {
 module.exports = { renderMarkdown };
 ```
 
-The function named `escapeUnused()` does not escape the input. The replacements add formatting tags while allowing existing HTML, such as an image with an error handler, to pass through. The link replacement also places unvalidated input into an HTML attribute.
+The escapeUnused() function did not actually escape or remove anything. The rest of the function added Markdown formatting but also left any HTML supplied by the author in place. It created links without checking whether their destinations were safe.
 
-The output is displayed by `components/PostBody.js`:
+The following component then displayed that output as HTML:
+
+**File:** `components/PostBody.js`
 
 ```javascript
 "use client";
@@ -88,21 +88,23 @@ export default function PostBody({ html }) {
 }
 ```
 
-Because this component explicitly inserts HTML, the string supplied to it must already be safe.
+Because this component treats its input as HTML, the app needs to clean the formatted post before passing it here.
 
-### Patched Code (After Fix)
+### Patched Code After the Fix
 
-From the project folder containing `package.json`, install the required packages:
+From the project folder containing `package.json`, install the packages used by the patch:
 
 ```powershell
 npm.cmd install --save-exact markdown-it@15.0.2 sanitize-html@2.17.7
 ```
 
+Replace the contents of `lib/markdown.js` with:
+
 ```javascript
 const MarkdownIt = require("markdown-it");
 const sanitizeHtml = require("sanitize-html");
 
-// Parse Markdown on the server. User-supplied HTML stays literal text.
+// Keep HTML entered in posts as plain text.
 const markdown = new MarkdownIt({
   html: false,
   breaks: true,
@@ -112,8 +114,7 @@ const markdown = new MarkdownIt({
 function renderMarkdown(src) {
   const html = markdown.render(String(src ?? ""));
 
-  // Sanitize AFTER Markdown conversion, immediately before the HTML sink.
-  // Only the elements and attributes needed for post formatting are allowed.
+  // Keep only the HTML needed for supported formatting.
   return sanitizeHtml(html, {
     allowedTags: [
       "p", "br", "strong", "em", "code", "pre",
@@ -131,28 +132,25 @@ function renderMarkdown(src) {
 module.exports = { renderMarkdown };
 ```
 
-Keep the updated `package.json` and `package-lock.json` with the patched source, then restart the application.
+Save the changes and restart the application. Include the updated `package.json` and `package-lock.json` in the repository along with `lib/markdown.js`.
 
-The patched version uses `markdown-it` with `html: false`, so raw HTML entered by an author becomes literal text. It then passes the generated HTML through `sanitize-html`, allowing only the formatting elements, link attributes, and URL schemes listed in the configuration.
+The new renderMarkdown() function uses `markdown-it` to handle formatting while keeping user-entered HTML as plain text. It then uses `sanitize-html` to allow only the formatting tags and links listed in the configuration. This keeps features such as bold text, headings, and lists while blocking executable HTML and unsafe links.
 
-Sanitization occurs **after Markdown conversion** and before the result reaches `PostBody`. This preserves supported formatting while preventing active HTML elements, event handlers, and unsafe link schemes from reaching the browser as executable content.
+**Fix:** Replaced the original Markdown formatter with a Markdown parser and an HTML sanitizer. The cleanup happens after Markdown is converted to HTML and before the post is displayed.
 
-**Fix:** Replaced the custom regex-based Markdown renderer with Markdown parsing that disables raw HTML, followed by sanitization of the generated HTML. Added the two dependencies and updated the lockfile.
-
-**Observed behavior after the patch:**
-
-In the isolated Chromium test, HTML produced by the patched renderer displayed the same payload as literal text. There was no active image element, no new alert, and no change to the heading. The automated formatting tests also confirmed that the supported Markdown remained available.
+**Observed behavior after the patch:** The same demonstration post appeared as plain text. It no longer opened an alert or changed the page heading, including when viewed in an incognito window. Normal Markdown formatting continued to display.
 
 ![After patch screenshot 1](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20182434.png)
 
-**Ingognito browser showing the stored XSS no longer executes:**
-![After patch screenshot 1](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20182537.png)
+**Incognito browser showing the stored XSS no longer executes:**
 
-The patch runs whenever a stored post is rendered. Existing malicious posts therefore go through the corrected renderer too; removing the demonstration post alone would not repair the underlying defect.
+![After patch incognito screenshot](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20182537.png)
 
-## Exact test inputs
+The original test post can remain saved in the database without executing because every post passes through the patched formatter when displayed. Deleting the test post alone would not have fixed the vulnerability.
 
-The following test requests are documented for reproducibility. These should be entered into the post bodies and submitted by pressing "Post to the wall". Then Next.js submits the form to its Server Action.
+## Exact Test Inputs
+
+Enter each example into a post and click **Post to the wall**.
 
 **Stored-XSS demonstration:**
 
@@ -161,7 +159,7 @@ XSS demonstration
 <img src="/chalk-xss-missing-image" onerror="document.querySelector('.hero h1').textContent='CHALK XSS PROOF';alert('Chalk stored XSS')">
 ```
 
-Expected after patch: literal text, no active image, no alert, and no heading change.
+**Expected after the patch:** The HTML appears as text. No image element is created, no alert opens, and the heading stays unchanged.
 
 **JavaScript link test:**
 
@@ -169,45 +167,32 @@ Expected after patch: literal text, no active image, no alert, and no heading ch
 [Click here](javascript:alert(1))
 ```
 
-Expected after patch: no executable JavaScript link.
+**Expected after the patch:** The post does not contain a working link that runs JavaScript.
 
-## Hosted testing
+## Hosted Testing
 
-The render website stopped the XSS payload from executing both in the regular browser and in the incognito browser.
+On the patched website hosted through Render, the demonstration post did not execute in either a regular browser window or an incognito window. The heading stayed unchanged, and the HTML appeared as text.
 
-## Normal functionality checks:
+## Normal Functionality Checks
 
-| Test | Actual result / verification status |
+| Test | Result or verification status |
 |---|---|
-| Original XSS payload | In isolated Chromium rendering, the handler changed the heading and opened the expected alert. |
-| Same payload after the patch | In isolated Chromium rendering, the payload remained text; no image element, new alert, or heading change. |
-| Bold, italic, and headings | Automated renderer tests passed. |
-| Inline code | Automated test passed, including HTML and Markdown characters inside code. |
-| Lists and line breaks | Automated renderer tests passed. |
-| HTTPS, relative, and email links | Automated renderer tests passed. |
-| Unsafe links and active HTML | All 13 active-content/link test cases passed in the patched renderer. |
-| Register, sign in, and sign out | Manual app walkthrough pending. |
-| Create a post and refresh the wall | Manual app walkthrough pending. |
-| Author or officer takes down a post | Manual app walkthrough pending. |
-| Member cannot access officer notes | Manual app walkthrough pending. |
-| Officer can access the desk | Manual app walkthrough pending. |
+| Original XSS demonstration | Changed the heading and displayed an alert before the patch. |
+| Same post after the patch | Displayed as text without an alert or heading change. |
+| Hosted test in regular and incognito windows | The demonstration post did not execute. |
+| Bold, italic, and headings | Passed the automated renderer checks. |
+| Inline code | Passed, including code containing HTML and Markdown characters. |
+| Lists and line breaks | Passed the automated renderer checks. |
+| HTTPS, relative, and email links | Passed the automated renderer checks. |
+| Unsafe links and executable HTML | All 13 related automated cases passed in the tested renderer. |
+| Register, sign in, and sign out | Full manual check still needs to be documented. |
+| Create a post and refresh the wall | Covered by the demonstration walkthrough. |
+| Author or officer removes a post | Manual check still needs to be documented. |
+| Member cannot access officer notes | Manual check still needs to be documented. |
+| Officer can access the desk | Manual check still needs to be documented. |
 
 ## Summary
 
-The identified stored-XSS defect in Chalk's post-rendering path has been patched in the supplied code. The fix disables raw HTML in Markdown and sanitizes the resulting HTML before display.
+The patch fixes the identified stored-XSS issue by keeping user-entered HTML as text and cleaning the formatted output before displaying it. The demonstration post no longer executes, while supported Markdown formatting remains available.
 
-**Key improvements:**
-
-- User-supplied HTML is rendered as text.
-- Generated HTML is limited to approved formatting tags and link attributes.
-- Unsafe URL schemes do not become executable links.
-- Supported Markdown formatting is preserved.
-- Stored posts pass through the corrected renderer whenever they are displayed.
-
-**Verification status:**
-
-Seventeen automated renderer tests passed. A separate Chromium test confirmed execution with the original renderer and inert output with the patched renderer. That browser test used an isolated page containing the renderer's output; it was not a complete browser walkthrough of the running Next.js application.
-
-The supplied complete patched project also passed a production build and returned zero known dependency vulnerabilities in its audit after the separate PostCSS update. Those results apply to that complete project, not automatically to a copy that has only received the Markdown-file edit.
-
-Manual application checks, screenshots, and hosted verification remain to be added. The available evidence supports this specific XSS fix; it does not establish that every possible vulnerability in the application has been eliminated.
+Earlier testing included 17 automated renderer checks and a separate Chromium test comparing the original and patched output. Those checks tested the renderer rather than every feature of the application. The hosted browser checks provide additional evidence for this XSS fix, while account, permission, and post-removal checks still need to be fully documented. These results support the specific fix described here, rather than a claim that the entire application is free of vulnerabilities.
