@@ -12,17 +12,16 @@
 
 1. Run the original, unpatched application locally, and open [http://127.0.0.1:3000](http://127.0.0.1:3000).
 3. Sign in using `maya@campus.edu` and password `campus123`.
-4. Click **Post** and submit a normal post containing `**bold**` and `*italic*` to establish the baseline.
-5. Create another post containing this exact text:
+4. Click **Post** and submit a normal post containing whatever you like. You will be able to view it on the wall.
+5. Now create another post containing this exact text:
 
    ```html
-   XSS demonstration
+   XSS demo
    <img src="/chalk-xss-missing-image" onerror="document.querySelector('.hero h1').textContent='CHALK XSS PROOF';alert('Chalk stored XSS')">
    ```
 
 6. Click **Post to the wall**. On the vulnerable version, the expected result is an alert saying `Chalk stored XSS` and a main heading changed to `CHALK XSS PROOF`.
 7. Refresh the wall and open the same URL in a private browser window to check that the stored post triggers for a separate visitor.
-8. Capture the result before applying the patch.
 
 **Expected behavior:** The app supports normal Markdown formatting, but text supplied in a post must not execute JavaScript in a visitor's browser.
 
