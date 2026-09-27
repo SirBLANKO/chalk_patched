@@ -143,10 +143,10 @@ Sanitization occurs **after Markdown conversion** and before the result reaches 
 
 In the isolated Chromium test, HTML produced by the patched renderer displayed the same payload as literal text. There was no active image element, no new alert, and no change to the heading. The automated formatting tests also confirmed that the supported Markdown remained available.
 
-**Screenshots:** TODO: Add your actual after-patch and normal-Markdown screenshots, then uncomment the corresponding image lines.
+![After patch screenshot 1](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20182434.png)
 
-<!-- ![After patch screenshot](docs/evidence/after-xss.png) -->
-<!-- ![Normal Markdown after patch](docs/evidence/after-markdown.png) -->
+**Ingognito browser showing the XSS was not stored:**
+![After patch screenshot 1](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20182537.png)
 
 The patch runs whenever a stored post is rendered. Existing malicious posts therefore go through the corrected renderer too; removing the demonstration post alone would not repair the underlying defect.
 
