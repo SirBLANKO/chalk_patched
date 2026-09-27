@@ -11,13 +11,6 @@
 ## Steps to reproduce:
 
 1. Run the original, unpatched application locally. From the Chalk folder containing `package.json`, use:
-
-   ```powershell
-   Copy-Item .env.example .env
-   npm.cmd ci
-   npx.cmd next dev --hostname 127.0.0.1 --port 3000
-   ```
-
 2. Open [http://127.0.0.1:3000](http://127.0.0.1:3000).
 3. Sign in using `maya@campus.edu` and password `campus123`.
 4. Click **Post** and submit a normal post containing `**bold**` and `*italic*` to establish the baseline.
