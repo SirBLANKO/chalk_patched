@@ -15,6 +15,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
 ENV DATABASE_PATH=/app/data/chalk.db
 
 RUN mkdir -p /app/data && chown node:node /app/data
