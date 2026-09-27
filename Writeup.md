@@ -35,7 +35,7 @@
 
 ![Before patch screenshot 3](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20150747.png)
 
-**Ingognito browswer also showing the main heading changed:**
+**Ingognito browser showing the stored XSS:**
 
 ![Before patch screenshot 3](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20150808.png)
 
