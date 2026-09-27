@@ -10,8 +10,7 @@
 
 ## Steps to reproduce:
 
-1. Run the original, unpatched application locally. From the Chalk folder containing `package.json`, use:
-2. Open [http://127.0.0.1:3000](http://127.0.0.1:3000).
+1. Run the original, unpatched application locally, and open [http://127.0.0.1:3000](http://127.0.0.1:3000).
 3. Sign in using `maya@campus.edu` and password `campus123`.
 4. Click **Post** and submit a normal post containing `**bold**` and `*italic*` to establish the baseline.
 5. Create another post containing this exact text:
