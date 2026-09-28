@@ -188,5 +188,3 @@ On the patched version hosted through Render, the XSS demonstration and JavaScri
 ## Summary
 
 The patch fixes the demonstrated stored-XSS issue while keeping normal Markdown formatting available. The same post that previously changed the page now displays as text, including when it is viewed in a separate browser session.
-
-Earlier verification included 17 automated renderer tests and a Chromium comparison of the original and patched output. Those tests focused on post rendering; the hosted checks covered the demonstration in the running application. The main lesson from this issue was that supporting Markdown also means deciding which HTML the app will allow before putting it on the page.
