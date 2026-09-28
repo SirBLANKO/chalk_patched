@@ -27,11 +27,17 @@
 
 **Observed behavior before the patch:** The alert appeared and the heading changed. Opening the wall in an incognito window produced the same result, showing that the problem affected visitors viewing the saved post, rather than only the person who submitted it.
 
-*[Insert before-patch screenshots here.]*
+![Before patch screenshot 1](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20150606.png)
+
+![Before patch screenshot 2](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20150709.png)
+
+![Before patch screenshot 3](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20150736.png)
+
+![Before patch screenshot 4](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20150747.png)
 
 **Incognito window showing the stored XSS:**
 
-*[Insert the before-patch incognito screenshot here.]*
+![Before patch incognito screenshot](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20150808.png)
 
 **Root cause:** The formatter used text replacements to turn Markdown into HTML, which fits the app’s small set of formatting features. However, those replacements left existing HTML untouched. When the browser tried to load the missing image in my test post, its onerror handler ran the JavaScript.
 
@@ -134,11 +140,11 @@ I used `markdown-it` to preserve the Markdown features while disabling raw HTML.
 
 **Observed behavior after the patch:** I submitted the same test post again, and its HTML appeared as text. The alert did not open, the heading stayed unchanged, and the incognito test gave the same result.
 
-*[Insert after-patch screenshots here.]*
+![After patch screenshot 1](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20182434.png)
 
 **Incognito window showing that the stored payload no longer executes:**
 
-*[Insert the after-patch incognito screenshot here.]*
+![After patch incognito screenshot](https://github.com/SirBLANKO/chalk_patched/blob/main/Screenshot%202026-09-27%20182537.png)
 
 One useful result was that the patch also handled the test post already saved in the database. Because posts pass through renderMarkdown() whenever the wall is loaded, fixing the formatter addressed existing posts too. Deleting the demonstration post alone would only have removed that one example.
 
