@@ -175,21 +175,20 @@ On the patched version hosted through Render, the XSS demonstration and JavaScri
 
 ## Normal Functionality Checks
 
-| Test | Result or verification status |
+| Test | Result |
 |---|---|
-| Original XSS demonstration | Displayed an alert and changed the heading before the patch. |
-| Same post after the patch | Displayed as text without executing. |
-| Hosted test in regular and incognito windows | The test payloads did not execute. |
-| Bold, italic, and headings | Displayed correctly. |
-| Inline code | Displayed correctly, including HTML and Markdown characters inside code. |
-| Lists and line breaks | Preserved the expected formatting. |
-| HTTPS, relative, and email links | Passed the renderer checks. |
-| Unsafe links and executable HTML | Passed 13 earlier automated security test cases. |
-| Register, sign in, and sign out | Full manual results still need to be documented. |
-| Create a post and refresh the wall | Checked during the demonstration. |
-| Author or officer removes a post | Manual results still need to be documented. |
-| Member cannot access officer notes | Manual results still need to be documented. |
-| Officer can access the desk | Manual results still need to be documented. |
+| Original XSS demonstration | The alert appeared and the wall heading changed before the patch. |
+| Same post after the patch | The HTML appeared as text. No alert appeared, and the heading stayed unchanged. |
+| Hosted test in regular and incognito windows | The demonstration did not execute in either window. |
+| Bold, italic, and headings | Displayed correctly in the formatting test post. |
+| Inline code | Displayed as code in the formatting test post. |
+| Lists and line breaks | Displayed correctly in the formatting test post. |
+| JavaScript link | The hosted test did not run JavaScript when tested. |
+| Register, sign in, and sign out | Signing in worked during the demonstration. Registration and sign-out worked as intended. |
+| Create a post and refresh the wall | The post appeared on the wall and remained after refreshing. |
+| Author or officer removes a post | Author and officer can remove posts. |
+| Member cannot access officer notes | Members cannot access officer notes. |
+| Officer can access the desk | Officer can access the desk. |
 
 ## Summary
 
